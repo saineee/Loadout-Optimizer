@@ -35,7 +35,7 @@ resource "aws_security_group" "k3s_sg" {
   }
 
   ingress {
-    description = "ingress for flannel's VXLAN overlay"
+    description = "ingress for flannel VXLAN overlay"
     from_port   = 8472
     to_port     = 8472
     protocol    = "udp"
