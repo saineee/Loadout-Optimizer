@@ -1,0 +1,12 @@
+- name: Extract token and build server URL
+  ansible.builtin.set_fact:
+    token: "{{ hostvars[groups['server'][0]]['k3s_token'] }}"
+    server_url: "https://{{ hostvars[groups['server'][0]]['private_ip_address']}}:6443"
+
+- name: Download k3s and join on token and ip
+  ansible.builtin.shell: curl -sfL https://get.k3s.io | sh -s - agent
+  environment:
+    K3S_URL: "{{ server_url }}"
+    K3S_TOKEN: "{{ token }}"
+  args:
+    creates: /etc/systemd/system/k3s-agent.service

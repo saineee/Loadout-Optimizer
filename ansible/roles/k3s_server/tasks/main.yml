@@ -1,0 +1,17 @@
+- name: Download and install k3s server
+  ansible.builtin.shell: curl -sfL https://get.k3s.io | sh -s - server --disable traefik
+  args:
+    creates: /usr/local/bin/k3s
+
+- name: Wait for k3s node token
+  ansible.builtin.wait_for:
+    path: /var/lib/rancher/k3s/server/node-token
+
+- name: Read k3s node token
+  ansible.builtin.slurp:
+    src: /var/lib/rancher/k3s/server/node-token
+  register: server_token
+
+- name: Save token
+  ansible.builtin.set_fact:
+    k3s_token: "{{ server_token['content'] | b64decode | trim }}"

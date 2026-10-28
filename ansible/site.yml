@@ -1,0 +1,11 @@
+- name: Initialize k3s Server
+  hosts: server
+  become: true
+  roles:
+    - k3s_server
+
+- name: Join k3s agent to server
+  hosts: agent
+  become: true
+  roles:
+    - k3s_agent
