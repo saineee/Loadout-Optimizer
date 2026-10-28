@@ -42,6 +42,14 @@ resource "aws_security_group" "k3s_sg" {
     self        = true
   }
 
+  ingress {
+    description = "http ingress for app"
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = [var.my_ip]
+  }
+
   egress {
     description = "egress for k3s to get k3s script, apt packages, and images"
     from_port   = 0
