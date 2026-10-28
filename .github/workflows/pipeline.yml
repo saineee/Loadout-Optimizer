@@ -19,9 +19,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: terraform
-    env:
-      TF_VAR_db_password: 'unusedpassword'
+        working-directory: terraform-k3s
     steps:
       - uses: actions/checkout@v4
       - uses: aws-actions/configure-aws-credentials@v4
@@ -33,6 +31,9 @@ jobs:
           terraform_version: '1.15.8'
       - run: terraform init
       - run: terraform plan -lock=false
+        # fake ip because real val is gitignored, sg rules will show a diff when cluster is up
+        env:
+          TF_VAR_my_ip: "192.0.2.1/32"
     if: github.event_name == 'pull_request'
   test:
     runs-on: ubuntu-latest
@@ -44,6 +45,7 @@ jobs:
       - run: python -m compileall . -q
       - run: pip install -r requirements-dev.txt
       - run: pytest
+  # deliberately skipped because infra is torn down, there is nothing to deploy to
   deploy:
     permissions:
       id-token: write
@@ -75,5 +77,5 @@ jobs:
           service: genshin-service
           cluster: genshin-cluster
           wait-for-service-stability: true
-    if: github.ref == 'refs/heads/master'
+    if: false
     needs: test
