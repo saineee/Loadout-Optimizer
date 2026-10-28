@@ -15,7 +15,7 @@ variable "instance_type" {
 
 resource "aws_key_pair" "ssh_access" {
   key_name   = "${var.name_prefix}-ssh"
-  public_key = file(pathexpand("~/aws_k3s_cluster/k3s_ssh.pub"))
+  public_key = file("${path.module}/k3s_ssh.pub")
 }
 
 resource "aws_instance" "server" {
