@@ -7,8 +7,8 @@ hostnames:
   - tag:Name
 
 groups:
-  server: "'server' in tags.Name"
-  agent: "'agent' in tags.Name"
+  server: "'server' in ec2_tags.Name"
+  agent: "'agent' in ec2_tags.Name"
 
 compose:
   ansible_host: public_ip_address
