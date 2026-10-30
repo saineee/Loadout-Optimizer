@@ -24,6 +24,7 @@ resource "aws_security_group" "k3s_sg" {
     to_port     = 6443
     protocol    = "tcp"
     self        = true
+    cidr_blocks = [var.my_ip]
   }
 
   ingress {
