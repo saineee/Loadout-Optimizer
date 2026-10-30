@@ -10,3 +10,4 @@ app.log
 *.tfstate
 *.tfstate.*
 *.tfvars
+k8s/postgres-secret.yaml
