@@ -1,11 +1,24 @@
 - name: Download and install k3s server
-  ansible.builtin.shell: curl -sfL https://get.k3s.io | sh -s - server --disable traefik
+  ansible.builtin.shell: curl -sfL https://get.k3s.io | sh -s - server --disable traefik --tls-san {{ ansible_host }}
   args:
     creates: /usr/local/bin/k3s
 
 - name: Wait for k3s node token
   ansible.builtin.wait_for:
     path: /var/lib/rancher/k3s/server/node-token
+
+- name: Read kubeconfig off the server
+  ansible.builtin.slurp:
+    src: /etc/rancher/k3s/k3s.yaml
+  register: k3s_config
+
+- name: Update server IP and set mode with copy
+  become: false
+  delegate_to: localhost
+  ansible.builtin.copy:
+    content: "{{ k3s_config['content'] | b64decode | replace('127.0.0.1', ansible_host) }}"
+    dest: ~/.kube/config
+    mode: '0600'
 
 - name: Read k3s node token
   ansible.builtin.slurp:
