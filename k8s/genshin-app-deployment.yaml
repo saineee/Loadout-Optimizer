@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: genshin-app
+  labels:
+    app: genshin-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: genshin-app
+  template:
+    metadata:
+      labels:
+        app: genshin-app
+    spec:
+      imagePullSecrets:
+        - name: ecr-repo
+      containers:
+        - name: genshin-app
+          image: '330866750121.dkr.ecr.us-east-1.amazonaws.com/genshin-app:0a131700780d2a7415678d5778c7a17cd406d3ac'
+          envFrom:
+            - secretRef:
+                name: app-db-url
+          ports:
+            - containerPort: 5000
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 5000
