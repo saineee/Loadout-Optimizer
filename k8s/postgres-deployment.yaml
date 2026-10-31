@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres-deployment
+  labels:
+    app: postgres
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres
+  template:
+    metadata:
+      labels:
+        app: postgres
+    spec:
+      volumes:
+        - name: pg-data-volume
+          emptyDir: { }
+      containers:
+        - name: postgres
+          image: postgres:15
+          envFrom:
+            - secretRef:
+                name: pgenv
+          ports:
+            - containerPort: 5432
+          volumeMounts:
+            - name: pg-data-volume
+              mountPath: /var/lib/postgresql/data
