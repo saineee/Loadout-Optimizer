@@ -169,14 +169,17 @@ repo root:
 
 ```bash
 kubectl apply -f k8s/ingress-nginx.yaml
-kubectl wait -n ingress-nginx --for=condition=available deploy/ingress-nginx-controller --timeout=180s
+kubectl rollout status -n ingress-nginx deploy/ingress-nginx-controller --timeout=180s
 kubectl create secret docker-registry ecr-repo --docker-server <account-id>.dkr.ecr.us-east-1.amazonaws.com \
   --docker-username AWS --docker-password "$(aws ecr get-login-password)"
 kubectl apply -R -f k8s/
 ```
 
 The controller goes first because it checks every Ingress before it's saved, so an
-Ingress applied before the controller is running gets rejected. The app Pod usually
+Ingress applied before the controller is running gets rejected. I used `rollout status`
+instead of `kubectl wait --for=condition=available` because the controller's Deployment
+sets `maxUnavailable: 1` with one replica, so it counts as available before its Pod is
+even ready, and `wait` returns right away. The app Pod usually
 restarts once at startup, because it tries to create its tables before Postgres is
 accepting connections. The restart fixes it.
 
